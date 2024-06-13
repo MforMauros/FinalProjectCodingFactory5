@@ -1,0 +1,77 @@
+/*.site-header {*/
+/*    background-color: #164bf0;*/
+/*    -webkit-backdrop-filter: saturate(180%) blur(20px);*/
+/*    backdrop-filter: saturate(180%) blur(20px);*/
+/*}*/
+/*.site-header a {*/
+/*    color: lightgray;*/
+/*    transition: ease-in-out color .15s;*/
+/*}*/
+/*.site-header a:hover {*/
+/*    color: white;*/
+/*    text-decoration: none;*/
+/*}*/
+
+
+
+
+body {
+    display: flex;
+    background-color: #f5e5c4;
+}
+
+.bg-color {
+    background-color: azure;
+}
+.main-content {
+    flex: 1;
+    padding: 20px;
+}
+.sidebar {
+    position: sticky;
+    top: 0;
+    width: 200px;
+    height: 100vh;
+    background-color: #164bf0;
+    padding-top: 20px;
+    overflow-y: auto;
+}
+.sidebar ul {
+    list-style-type: none;
+    padding: 0;
+}
+.sidebar ul li {
+    padding: 10px;
+    text-align: center;
+}
+.sidebar ul li a {
+    color: white;
+    text-decoration: none;
+    display: block;
+}
+.sidebar ul li a:hover {
+    background-color: #575757;
+}
+
+.logout-btn {
+    background-color: #ff1e1e;
+}
+
+.logout-btn a {
+    color: white;
+    text-decoration: none;
+}
+
+.logout-btn:hover {
+    background-color: #a40000;
+}
+
+.center-btn {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-top: 100px;
+}
+.center-btn .btn {
+    margin: 0 auto;
+}

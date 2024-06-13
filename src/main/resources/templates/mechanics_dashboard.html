@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-on="http://www.w3.org/1999/xhtml">
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/main.css">
+    <meta charset="UTF-8">
+    <title>Mechanic Dashboard</title>
+</head>
+<body>
+
+<div class="container-fluid content">
+    <div class="row">
+        <div class="col-12">
+            <div th:replace="fragments/page-title :: page-title ('Tasks Administrative Page')"></div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="container" id="main">
+                <form v-on:submit.prevent="postTask">
+                    <div class="card mb-4">
+                        <div aria-controls="taskForm" aria-expanded="false" class="card-header" data-target="#taskForm"
+                             data-toggle="collapse" id="formHeader" style="cursor: pointer">
+                            <div class="float-left">New/Edit Task</div>
+                            <div class="float-right">+</div>
+                        </div>
+                        <div class="card-body collapse" id="taskForm">
+                            <div class="form-group row">
+                                <label for="taskName" class="col-sm-4 col-form-label">Task title</label>
+                                <input id="task_id" type="hidden" v-model="task_id">
+                                <input id="taskName" class="form-control col-sm-8" placeholder="Task title" type="text"
+                                       v-model="task_name"/>
+                            </div>
+                            <div class="form-group row">
+                                <label for="task_description" class="col-sm-4 col-form-label">Task description</label>
+                                <input id="task_description" class="form-control col-sm-8" placeholder="Task description"
+                                       type="text" v-model="task_description"/>
+                            </div>
+                            <div class="form-group row">
+                                <label for="task_status" class="col-sm-4 col-form-label">Status</label>
+                                <select name="task_status" id="task_status" class="form-control col-sm-8" v-model="task_status">
+                                    <option disabled value="">Please select the Status</option>
+                                    <option :selected="status.statusName == task_status" v-bind:value="status.statusName"
+                                            v-for="status in statuses">{{ status.statusName }}
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="form-group row">
+                                <label for="task_type" class="col-sm-4 col-form-label">Type</label>
+                                <select name="task_type" id="task_type" class="form-control col-sm-8" v-model="task_type">
+                                    <option disabled value="">Please select the Type</option>
+                                    <option :selected="type.typeName == task_type" v-bind:value="type.typeName"
+                                            v-for="type in types">{{ type.typeName }}
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="form-group row">
+                                <label for="task_mechanic_id" class="col-sm-4 col-form-label">Mechanics</label>
+                                <select name="task_mechanic_id" id="task_mechanic_id" class="form-control col-sm-8" v-model="task_mechanic_id">
+                                    <option disabled value="">Please select a Mechanic</option>
+                                    <option :selected="mechanic.mechanicId == task_mechanic_id" v-bind:value="mechanic.mechanicId"
+                                            v-for="mechanic in mechanics">{{ mechanic.mechanicLastName }} {{ mechanic.mechanicFirstName }}
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-sm-4"></div>
+                                <input class="btn btn-success col-sm-8" type="submit" value="Save">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+                <table class="table table-striped table-bordered">
+                    <thead>
+                    <tr align="center">
+                        <th>ID</th>
+                        <th>Title</th>
+                        <th>Description</th>
+                        <th>Status</th>
+                        <th>Type</th>
+                        <th>Assignee</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr v-for="task in tasks">
+                        <td>{{ task.taskId }}</td>
+                        <td>{{ task.title }}</td>
+                        <td>{{ task.description }}</td>
+                        <td>{{ task.statusOfTask }}</td>
+                        <td>{{ task.typeOfTask }}</td>
+                        <td>{{ task.mechanicOfTaskLastName }} {{ task.mechanicOfTaskFirstName }}</td>
+                        <td align="center">
+                            <button class="btn btn-secondary" v-on:click="editTask(task)">Edit</button>
+                            <button class="btn btn-danger" v-on:click="deleteTask(task)">Delete</button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="center-btn">
+            <button class="btn logout-btn"><a href="/logout">Logout</a></button>
+        </div>
+    </div>
+
+</div>
+
+<script src="webjars/vue/vue.min.js"></script>
+<script src="webjars/axios/dist/axios.min.js"></script>
+<script>
+    var app = new Vue({
+        el: '#main',
+        data() {
+            return {
+                tasks: '',
+                statuses: '',
+                mechanics: '',
+                types: '',
+                task_id: '',
+                task_name: '',
+                task_description: '',
+                task_status: '',
+                task_type: '',
+                task_mechanic_id: ''
+            }
+        },
+        mounted() {
+            this.getTasks();
+        },
+        methods: {
+            getTasks: function () {
+                console.log('Getting tasks ...');
+                axios
+                    .get("/api/v1/tasks")
+                    .then(response => this.tasks = response.data);
+                axios
+                    .get("/api/v1/mechanics")
+                    .then(response => (this.mechanics = response.data));
+                axios
+                    .get("/api/v1/status")
+                    .then(response => (this.statuses = response.data));
+                axios
+                    .get("/api/v1/types")
+                    .then(response => (this.types = response.data))
+            },
+            editTask: function (task) {
+                console.log(task);
+                this.task_id = task.taskId;
+                this.task_name = task.title;
+                this.task_description = task.description;
+                this.task_status = task.statusOfTask;
+                this.task_type = task.typeOfTask;
+                this.task_mechanic_id = task.mechanicId;
+                document.getElementById('taskForm').classList.add("show");
+            },
+            postTask: function (task) {
+                if(this.task_id === '' || this.task_id == null) {
+                    axios
+                        .post("api/v1/add-new-task", {
+                            "taskId": this.task_id,
+                            "title": this.task_name,
+                            "description": this.task_description,
+                            "statusOfTask": this.task_status,
+                            "typeOfTask": this.task_type,
+                            "mechanicId": this.task_mechanic_id
+                        })
+                        .then(savedTask => {
+                            console.log(savedTask.data);
+                            this.tasks.push(savedTask.data);
+                            this.task_name = '';
+                            this.task_description = '';
+                            this.task_status = '';
+                            this.task_type = '';
+                            this.task_mechanic_id = '';
+                        }).catch(error => {
+                        console.log("There was an error adding the new task:", error);
+                    });
+                    console.log('New task added');
+                } else {
+                    axios
+                        .put("api/v1/update-task/" + this.task_id, {
+                            "taskId": this.task_id,
+                            "title": this.task_name,
+                            "description": this.task_description,
+                            "statusOfTask": this.task_status,
+                            "typeOfTask": this.task_type,
+                            "mechanicId": this.task_mechanic_id
+                        })
+                        .then(editedTask => {
+                            this.getTasks();
+                            this.task_id = '';
+                            this.task_name = '';
+                            this.task_description = '';
+                            this.task_status = '';
+                            this.task_type = '';
+                            this.task_mechanic_id = '';
+                        })
+                }
+            },
+            deleteTask: async function (task) {
+                await axios
+                    .delete("/api/v1/task/" + task.taskId);
+                this.getTasks();
+                console.log('Task deleted');
+            }
+        }
+    })
+</script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+</body>
+</body>
+</html>

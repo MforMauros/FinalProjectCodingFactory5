@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/main.css">
+    <meta charset="UTF-8">
+    <title>Home</title>
+</head>
+<body>
+
+<div th:replace="fragments/header :: header"></div>
+
+<main role="main" class="main-content">
+    <div class="position-relative overflow-hidden text-center bg-color">
+        <div class="col-md-12 p-lg-1 mx-auto my-5">
+            <h1 class="display-6 font-weight-normal">Car Service Management Application</h1>
+            <p class="lead font-weight-normal">A Java full stack application with all the CRUD operations on MySQL database using thymeleaf as our Front end Framework and Spring Boot as our Back end REST API.</p>
+        </div>
+        <div class="product-device shadow-sm d-none d-md-block"></div>
+        <div class="product-device product-device-2 shadow-sm d-none d-md-block"></div>
+    </div>
+
+    <div th:replace="fragments/page-title :: page-title ('A very simple app that helps mechanics in their garage to keep tracking of their tasks and be more efficient.')"></div>
+    <br>
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Cars To Fixed Admin Page</h5>
+                    <p class="card-text">Manage your cars from your customers.</p>
+                    <a class="btn btn-info" href="/cars">Cars</a>
+                </div>
+            </div>
+            <div class="col-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Task Admin Page</h5>
+                    <p class="card-text">Manage your mechanics tasks.</p>
+                    <a class="btn btn-info" href="/tasks">Tasks</a>
+                </div>
+            </div>
+            <div class="col-sm ">
+                <div class="card-body">
+                    <h5 class="card-title">Mechanics Admin Page</h5>
+                    <p class="card-text">Manage your mechanics.</p>
+                    <a class="btn btn-info" href="/mechanics">Mechanics</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="center-btn">
+            <button class="btn logout-btn"><a href="/logout">Logout</a></button>
+        </div>
+    </div>
+</main>
+
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+</body>
+</html>

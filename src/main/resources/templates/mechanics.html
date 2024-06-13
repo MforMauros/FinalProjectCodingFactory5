@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+          integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/main.css">
+    <meta charset="UTF-8">
+    <title>Mechanics</title>
+</head>
+<body>
+
+<div class="sidebar" th:fragment="header">
+    <ul>
+        <li><a href="/" th:href="@{/}">Home</a></li>
+        <li><a href="/cars" th:href="@{/cars}">Cars</a></li>
+        <li><a href="/tasks" th:href="@{/tasks}">Tasks</a></li>
+        <li><a href="/mechanics" th:href="@{/mechanics}">Mechanics</a></li>
+    </ul>
+</div>
+
+<div class="container-fluid content">
+    <div class="row">
+        <div class="col-12">
+            <div th:replace="fragments/page-title :: page-title ('Mechanics Administrative Page')"></div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="container" id="main">
+                <form v-on:submit.prevent="postMechanic">
+                    <div class="card mb-4">
+                        <div aria-controls="mechanicForm" aria-expanded="false" class="card-header" data-target="#mechanicForm"
+                             data-toggle="collapse" id="formHeader" style="cursor: pointer">
+                            <div class="float-left">New/Edit Mechanic</div>
+                            <div class="float-right">+</div>
+                        </div>
+                        <div class="card-body collapse" id="mechanicForm">
+                            <div class="form-group row">
+                                <label for="firstName" class="col-sm-4 col-form-label">First Name</label>
+                                <input id="mechanicId" type="hidden" v-model="mechanicId">
+                                <input id="firstName" class="form-control col-sm-8" placeholder="First Name" type="text"
+                                       v-model="firstName"/>
+                            </div>
+                            <div class="form-group row">
+                                <label for="lastName" class="col-sm-4 col-form-label">Last Name</label>
+                                <input id="lastName" class="form-control col-sm-8" placeholder="Last Name"
+                                       type="text" v-model="lastName"/>
+                            </div>
+                            <div class="form-group row">
+                                <label for="emailAddress" class="col-sm-4 col-form-label">Email Address</label>
+                                <input id="emailAddress" class="form-control col-sm-8" placeholder="Email Address"
+                                       type="text" v-model="emailAddress"/>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-sm-4"></div>
+                                <input class="btn btn-success col-sm-8" type="submit" value="Save">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+                <table class="table table-striped table-bordered">
+                    <thead>
+                    <tr align="center">
+                        <th>ID</th>
+                        <th>Last name</th>
+                        <th>First name</th>
+                        <th>Email address</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr v-for="mechanic in mechanics">
+                        <td>{{ mechanic.mechanicId }}</td>
+                        <td>{{ mechanic.mechanicLastName }}</td>
+                        <td>{{ mechanic.mechanicFirstName }}</td>
+                        <td>{{ mechanic.mechanicEmailAddress }}</td>
+                        <td align="center">
+                            <button class="btn btn-secondary" v-on:click="editMechanic(mechanic)">Edit</button>
+                            <button class="btn btn-danger" v-on:click="deleteMechanic(mechanic)">Delete</button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="center-btn">
+            <button class="btn logout-btn"><a href="/logout">Logout</a></button>
+        </div>
+    </div>
+</div>
+
+<script src="webjars/vue/vue.min.js"></script>
+<script src="webjars/axios/dist/axios.min.js"></script>
+<script>
+    var app = new Vue({
+        el: '#main',
+        data() {
+            return {
+                mechanics: null,
+                mechanicId: null,
+                firstName: null,
+                lastName: null,
+                emailAddress: null
+            }
+        },
+        mounted() {
+            this.getMechanics();
+        },
+        methods: {
+            getMechanics: function () {
+                console.log('Getting members ...');
+                axios
+                    .get("/api/v1/mechanics")
+                    .then(response => (this.mechanics = response.data));
+
+            },
+            postMechanic: function () {
+                if (this.mechanicId == '' || this.mechanicId == null) {
+                    axios
+                        .post("api/v1/add-new-mechanic/", {
+                            "mechanicFirstName": this.firstName,
+                            "mechanicLastName": this.lastName,
+                            "mechanicEmailAddress": this.emailAddress
+                        })
+                        .then(addedMechanic => {
+                            this.mechanics.push(addedMechanic.data);
+                            this.firstName = '';
+                            this.lastName = '';
+                            this.emailAddress = '';
+                        })
+                    console.log('New mechanic added');
+                } else {
+                    axios
+                        .put("api/v1/update-mechanic/" + this.mechanicId, {
+                            "mechanicId": this.mechanicId,
+                            "mechanicFirstName": this.firstName,
+                            "mechanicLastName": this.lastName,
+                            "mechanicEmailAddress": this.emailAddress
+                        })
+                        .then(editedMechanic => {
+                            this.getMechanics();
+                            this.mechanicId = '';
+                            this.firstName = '';
+                            this.lastName = '';
+                            this.emailAddress = '';
+                        })
+                    console.log('Mechanic updated');
+                }
+            },
+            editMechanic: function (mechanic) {
+                this.mechanicId = mechanic.mechanicId;
+                this.firstName = mechanic.mechanicFirstName;
+                this.lastName = mechanic.mechanicLastName;
+                this.emailAddress = mechanic.mechanicEmailAddress;
+                document.getElementById('mechanicForm').classList.add("show");
+            },
+            deleteMechanic: async function (mechanic) {
+                await axios
+                    .delete("/api/v1/mechanic/" + mechanic.mechanicId);
+                this.getMechanics();
+                console.log('Mechanic deleted');
+            }
+        },
+    })
+</script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+        integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+        integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
+        crossorigin="anonymous"></script>
+</body>
+</html>
